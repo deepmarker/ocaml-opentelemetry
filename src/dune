@@ -1,0 +1,4 @@
+; deepmarker: the lwt/eio/curl backends are not built here -- FHV2 is Async and
+; uses lib/otel_async instead. Restore a directory here if its deps land in the
+; switch.
+(dirs ambient-context atomic client core domain emitter lib proto trace util)

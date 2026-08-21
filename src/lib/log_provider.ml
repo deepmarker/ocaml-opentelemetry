@@ -52,6 +52,34 @@ let[@inline] emit (log : Log_record.t) : unit =
 
 open Log_record
 
+(** Collect the dynamically enriched attributes on top of [attrs]. *)
+let with_dyn_attrs attrs =
+  match Dynamic_enricher.collect () with
+  | [] -> attrs
+  | dyn_attrs ->
+    let base = Option.value ~default:[] attrs in
+    Some (List.rev_append dyn_attrs base)
+
+(** Emit a named structured event, ie. a log record carrying the OTLP
+    [event_name] field.
+
+    [event_name] must be a stable identifier and must not embed dynamic values;
+    searchable context belongs in [attrs] and event-specific structure in
+    [body]. *)
+let event ?(logger = default_logger) ?attrs ?trace_id ?span_id
+    ?(severity : severity option) ?(body : Value.t option) (event_name : string)
+    : unit =
+  if Logger.enabled logger then (
+    let now = Clock.now logger.clock in
+    let attrs = with_dyn_attrs attrs in
+    let body = Option.value body ~default:(`String "") in
+    let logrec =
+      Log_record.make ?attrs ?trace_id ?span_id ?severity ~event_name
+        ~observed_time_unix_nano:now body
+    in
+    Logger.emit1 logger logrec
+  )
+
 (** Create log record and emit it on [logger] *)
 let log ?(logger = default_logger) ?attrs ?trace_id ?span_id
     ?(severity : severity option) (msg : string) : unit =

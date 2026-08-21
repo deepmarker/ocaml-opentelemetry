@@ -153,6 +153,8 @@ module Logger = struct
   let log = Log_provider.log
 
   let logf = Log_provider.logf
+
+  let event = Log_provider.event
 end
 
 module Logs = Logger [@@deprecated "use Logger"]

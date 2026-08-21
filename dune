@@ -7,3 +7,7 @@
    -w
    +a-4-30-40-41-42-44-48-58-70
    -strict-sequence)))
+
+; deepmarker: only the source tree is built in-tree; tests, the proto
+; submodule and the docs are not.
+(dirs src)

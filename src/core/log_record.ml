@@ -47,9 +47,14 @@ let pp_flags = Proto.Logs.pp_log_record_flags
 
 let pp = Proto.Logs.pp_log_record
 
-(** Make a single log entry. *)
-let make ?time ?severity ?log_level ?flags ?trace_id ?span_id ?(attrs = [])
-    ~(observed_time_unix_nano : Timestamp_ns.t) (body : Value.t) : t =
+(** Make a single log entry.
+    @param event_name
+      the OTLP [event_name] field, naming a structured event. It must be a
+      stable identifier such as ["fhv2.handoff.started"] and must not embed
+      dynamic values. *)
+let make ?time ?severity ?log_level ?flags ?trace_id ?span_id ?event_name
+    ?(attrs = []) ~(observed_time_unix_nano : Timestamp_ns.t) (body : Value.t) :
+    t =
   let time_unix_nano =
     match time with
     | None -> observed_time_unix_nano
@@ -61,21 +66,21 @@ let make ?time ?severity ?log_level ?flags ?trace_id ?span_id ?(attrs = [])
   let attributes = List.map Key_value.conv attrs in
   make_log_record ~time_unix_nano ~observed_time_unix_nano
     ?severity_number:severity ?severity_text:log_level ?flags ?trace_id ?span_id
-    ~attributes ?body ()
+    ?event_name ~attributes ?body ()
 
 (** Make a log entry whose body is a string *)
-let make_str ?time ?severity ?log_level ?flags ?trace_id ?span_id ?attrs
-    ~observed_time_unix_nano (body : string) : t =
+let make_str ?time ?severity ?log_level ?flags ?trace_id ?span_id ?event_name
+    ?attrs ~observed_time_unix_nano (body : string) : t =
   make ?time ~observed_time_unix_nano ?severity ?log_level ?flags ?trace_id
-    ?span_id ?attrs (`String body)
+    ?span_id ?event_name ?attrs (`String body)
 
 (** Make a log entry with format *)
-let make_strf ?time ?severity ?log_level ?flags ?trace_id ?span_id ?attrs
-    ~observed_time_unix_nano fmt =
+let make_strf ?time ?severity ?log_level ?flags ?trace_id ?span_id ?event_name
+    ?attrs ~observed_time_unix_nano fmt =
   Format.kasprintf
     (fun bod ->
       make_str ?time ~observed_time_unix_nano ?severity ?log_level ?flags
-        ?trace_id ?span_id ?attrs bod)
+        ?trace_id ?span_id ?event_name ?attrs bod)
     fmt
 
 let add_attrs (self : t) (attrs : Key_value.t list) : unit =

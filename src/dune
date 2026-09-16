@@ -1,4 +1,3 @@
-; deepmarker: the lwt/eio/curl backends are not built here -- FHV2 is Async and
-; uses lib/otel_async instead. Restore a directory here if its deps land in the
-; switch.
+; deepmarker: the curl backend is not built here -- FHV2 is Async and uses
+; lib/otel_async instead. The lwt and eio backends are deleted from this fork.
 (dirs ambient-context atomic client core domain emitter lib proto trace util)

@@ -25,10 +25,8 @@ jobs:
       - name: Build documentation
         run: |
           opam exec -- odig odoc --cache-dir=_doc/ \
-            opentelemetry opentelemetry-client opentelemetry-lwt \
-            opentelemetry-cohttp-lwt opentelemetry-client-ocurl \
-            opentelemetry-client-ocurl-lwt opentelemetry-client-cohttp-lwt \
-            opentelemetry-client-cohttp-eio opentelemetry-logs
+            opentelemetry opentelemetry-client \
+            opentelemetry-client-ocurl opentelemetry-logs
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

@@ -16,6 +16,3 @@
   threads.posix)
  (synopsis
   "Basic exporters, as well as common types and logic shared between exporters"))
-
-; deepmarker: no lwt backend, see src/dune.
-(dirs :standard \ lwt)

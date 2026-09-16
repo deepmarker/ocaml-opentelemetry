@@ -9,9 +9,7 @@ connectors to talk to opentelemetry software such as [jaeger](https://www.jaeger
   and possibly libraries. It doesn't communicate with anything except
   an exporter (default: no-op);
 - library `opentelemetry-client-ocurl` is an exporter that communicates
-  via http+protobuf with some collector (otelcol, datadog-agent, etc.) using cURL bindings;
-- library `opentelemetry-client-cohttp-lwt` is an exporter that communicates
-  via http+protobuf with some collector using cohttp.
+  via http+protobuf with some collector (otelcol, datadog-agent, etc.) using cURL bindings.
 
 ## License
 
@@ -23,7 +21,6 @@ MIT
 - [x] basic metrics
 - [x] basic logs
 - [ ] nice API
-- [x] interface with `lwt`
 - [x] sync collector relying on ocurl
   * [x] batching, perf, etc.
 - [ ] async collector relying on ocurl-multi
@@ -55,17 +52,16 @@ let foo () =
 If you're writing a top-level application, you need to perform some initial configuration.
 
 1. Set the [`service_name`][];
-2. optionally configure [ambient-context][] with the appropriate storage for your environment — TLS, Lwt, Eio…;
+2. optionally configure [ambient-context][] with the appropriate storage for your environment;
 3. and install an exporter (usually by calling your client library's `with_setup` function.)
 
-For example, if your application is using Lwt, and you're using `ocurl` as your collector, you might do something like this:
+For example, if you're using `ocurl` as your collector, you might do something like this:
 
 ```ocaml
 let main () =
   Otel.Globals.service_name := "my_service";
   Otel.Gc_metrics.setup ();
 
-  Opentelemetry_ambient_context.set_storage_provider (Opentelemetry_ambient_context_lwt.storage ());
   Opentelemetry_client_ocurl.with_setup () @@ fun () ->
   (* … *)
   foo ();
@@ -116,12 +112,6 @@ or the datadog agent).
 Do note that it uses a thread pool and is incompatible
 with uses of `fork` on some Unixy systems.
 See [#68](https://github.com/imandra-ai/ocaml-opentelemetry/issues/68) for a possible workaround.
-
-## opentelemetry-client-cohttp-lwt
-
-This is a Lwt-friendly exporter that uses cohttp to send
-signals to some collector (e.g. `otelcol`). It must be run
-inside a `Lwt_main.run` scope.
 
 ## Opentelemetry-trace
 

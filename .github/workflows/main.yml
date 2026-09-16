@@ -14,13 +14,10 @@ jobs:
         include:
           - ocaml-version: "4.08"
             container: ghcr.io/ocaml-tracing/ocaml-opentelemetry/ci-4.08:latest
-            eio: false
           - ocaml-version: "4.14"
             container: ghcr.io/ocaml-tracing/ocaml-opentelemetry/ci-4.14:latest
-            eio: false
           - ocaml-version: "5.4"
             container: ghcr.io/ocaml-tracing/ocaml-opentelemetry/ci-5.4:latest
-            eio: true
 
     runs-on: ubuntu-latest
     container: ${{ matrix.container }}
@@ -31,11 +28,7 @@ jobs:
           submodules: recursive
 
       - name: Build
-        run: opam exec -- dune build @install -p opentelemetry,opentelemetry-client,opentelemetry-lwt,opentelemetry-cohttp-lwt,opentelemetry-client-ocurl,opentelemetry-client-ocurl-lwt,opentelemetry-client-cohttp-lwt,opentelemetry-logs
-
-      - name: Build eio packages
-        if: ${{ matrix.eio }}
-        run: opam exec -- dune build @install -p opentelemetry-client-cohttp-eio,opentelemetry,opentelemetry-client,opentelemetry-lwt,opentelemetry-cohttp-lwt,opentelemetry-client-ocurl,opentelemetry-client-ocurl-lwt,opentelemetry-client-cohttp-lwt,opentelemetry-logs
+        run: opam exec -- dune build @install -p opentelemetry,opentelemetry-client,opentelemetry-client-ocurl,opentelemetry-logs
 
       - name: Lint (protoc check)
         run: opam exec -- dune build @lint
